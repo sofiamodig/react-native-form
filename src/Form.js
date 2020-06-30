@@ -45,18 +45,20 @@ class Form extends Component {
   }
 
   handleChange = (key, val) => {
-    this.setState({ [key]: val })
-
-    switch (key) {
-      case 'securityNr':
-        this.props.dispatch(updateSecurityNr(this.state.securityNr));
-      case 'phone':
-        this.props.dispatch(updatePhone(this.state.phone));
-      case 'email':
-        this.props.dispatch(updateEmail(this.state.email));
-      default:
-        return null;
-    }
+    this.setState({ [key]: val },
+      function() { 
+        switch (key) {
+          case 'securityNr':
+            this.props.dispatch(updateSecurityNr(this.state.securityNr));
+          case 'phone':
+            this.props.dispatch(updatePhone(this.state.phone));
+          case 'email':
+            this.props.dispatch(updateEmail(this.state.email));
+          default:
+            return null;
+        }
+      }
+    );
   }
 
   handleCountry = (val) => {
@@ -67,25 +69,43 @@ class Form extends Component {
     );
   }
   
-  handleSubmit = () => {
-    this.validate();
-
-    //Do this on succesful submit
-    console.log('success');
-    // this.props.dispatch(resetInfo())
-  };
-
-  validate = () => {
+  validateFields = () => {
     // Social security number validation
-    const securityRegex = /^\d{6,8}[-|(\s)]{0,1}\d{4}$/;
-    if (this.state.securityNr && !(securityRegex.test(this.state.securityNr))) {
-      this.setState({securityNrError: 'The social security number incorrect'})
-    } else if (!this.state.securityNr) {
+    securityValidate = false;
+    let month, date, shortYear, fullYear;
+  
+    if (this.state.securityNr.length == 10) {
+      shortYear = parseInt(this.state.securityNr.substr(0,2));
+      month = parseInt(this.state.securityNr.substr(2,2));
+      date = parseInt(this.state.securityNr.substr(4,2));
+  
+      if (month < 13 && date < 32) {
+        securityValidate = true;
+      } else {
+        securityValidate = false;
+      }
+    }
+  
+    if (this.state.securityNr.length == 12) {
+      fullYear = parseInt(this.state.securityNr.substr(0,4));
+      month = parseInt(this.state.securityNr.substr(4,2));
+      date = parseInt(this.state.securityNr.substr(6,2));
+  
+      if (month < 13 && date < 32 && fullYear > (new Date().getFullYear() - 120)) {
+        securityValidate = true;
+      } else {
+        securityValidate = false;
+      }
+    }
+    
+    if (!this.state.securityNr) {
       this.setState({securityNrError: 'This field is required'})
+    } else if (securityValidate == false) {
+      this.setState({securityNrError: 'The social security number incorrect'})
     } else {
       this.setState({securityNrError: ''})
     }
-
+  
     // Phone number validation
     const phoneRegex = /0([-\s]?\d){7,13}$/;
     if (this.state.phone && !(phoneRegex.test(this.state.phone))) {
@@ -95,22 +115,33 @@ class Form extends Component {
     } else {
       this.setState({phoneError: ''})
     }
-
+  
     // Email validation
     const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (this.state.email && !(emailRegex.test(this.state.email)) ) {
-      this.setState({emailError: 'The email you entered is invalid'})
+      this.setState({emailError: 'The email you entered is invalid'});
     } else if (!this.state.email) {
-      this.setState({emailError: 'This field is required'})
+      this.setState({emailError: 'This field is required'});
     } else {
-      this.setState({emailError: ''})
+      this.setState({emailError: ''});
     }
-
+  
     // Country validation
     if (!this.state.country) {
-      this.setState({countryError: 'This field is required'})
+      this.setState({countryError: 'This field is required'});
     } else {
-      this.setState({countryError: ''})
+      this.setState({countryError: ''});
+    }
+
+    setTimeout(() => {
+      this.validateForm(this.state.securityNrError, this.state.phoneError, this.state.emailError, this.state.countryError)
+    }, 200)
+  };
+
+  validateForm = (security, phone, email, country) => {
+    if (security.length < 1 && phone.length < 1 && email.length < 1 && country < 1) {
+      console.log('Success');
+      this.props.dispatch(resetInfo());
     }
   }
 
@@ -179,7 +210,7 @@ class Form extends Component {
             {this.state.countryError ? <Text style={styles.error}>{this.state.countryError}</Text> : null}
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={this.handleSubmit}>
+          <TouchableOpacity style={styles.button} onPress={this.validateFields}>
             <Text style={styles.buttonText}>Submit</Text>
           </TouchableOpacity>
         </View>
