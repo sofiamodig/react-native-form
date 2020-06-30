@@ -1,18 +1,35 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 
-const App = () => {
-  return (
-    <View>
-      <Text style={styles.text}>Hello World!</Text>
+import Form from './src/Form';
+import { store, persistor } from './src/store';
+
+export default class App extends React.Component {
+  renderLoading = () => (
+    <View style={styles.container}>
+      <Text>Loading...</Text>
     </View>
   );
-};
+  render() {
+    return (
+      <Provider store={store}>
+        <PersistGate persistor={persistor} loading={this.renderLoading()}>
+          <View style={styles.container}>
+            <Form />
+          </View>
+        </PersistGate>
+      </Provider>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
-  text: {
-    color: "#333"
-  }
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
-
-export default App;
