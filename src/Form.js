@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import { connect } from 'react-redux';
 import { updateSecurityNr, updatePhone, updateCountry, updateEmail } from './redux/form';
+import { updateCountries } from './redux/countries';
 import RNPickerSelect from 'react-native-picker-select';
 
 class Form extends Component {
@@ -9,7 +10,35 @@ class Form extends Component {
     securityNr: this.props.form.securityNr || '',
     phone: this.props.form.phone || '',
     country: this.props.form.country || '',
+    countriesList: this.props.countries.countries || []
   };
+
+  componentDidMount() {
+    if (Object.keys(this.state.countriesList).length < 1) {
+      this.getCountries()
+    }
+  }
+
+  getCountries() {
+    fetch('https://restcountries.eu/rest/v2/all', {
+      method: 'GET'
+    })
+    .then((response) => response.json())
+      .then((responseJson) => {
+        //Success 
+        let list = [];
+        Object.entries(responseJson).forEach(([key, value]) => {
+          list.push(value.name);
+        });
+
+        this.setState({ countriesList: list });
+        this.props.dispatch(updateCountries(list));
+    })
+    .catch((error) => {
+        //Error 
+        console.error(error);
+    });
+  }
 
   handleChange = (key, val) => {
     this.setState({ [key]: val })
@@ -35,15 +64,20 @@ class Form extends Component {
   }
   
   handleSubmit = () => {
-    console.log('success')
+    console.log('success');
   };
 
   render() {
+    const countriesItems = [];  
+    Object.entries(this.state.countriesList).forEach(([key, item]) => {
+      countriesItems.push({label: item, value: item, key: key});
+    });
+
     return (
       <View style={styles.container}>
         <Text>Fill in your social security number</Text>
         <TextInput
-          placeholder='YYYYMMDD-XXXX'
+          placeholder='YYYYMMDDXXXX'
           keyboardType = 'numeric'
           onChangeText={val => this.handleChange('securityNr', val)}
           value={this.state.securityNr}
@@ -74,11 +108,7 @@ class Form extends Component {
               value: null,
             }}
             value={this.state.country}
-            items={[
-                { label: 'Sweden', value: 'sweden', key: '1' },
-                { label: 'Norway', value: 'norway', key: '2' },
-                { label: 'Denmark', value: 'denmark', key: '3' },
-            ]}
+            items={countriesItems}
         />
 
         <Button title="Submit" onPress={this.handleSubmit} />
@@ -98,6 +128,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
   form: state.form,
+  countries: state.countriesList,
 });
 
 export default connect(mapStateToProps)(Form);
