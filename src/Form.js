@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, SafeAreaView, ScrollView, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import { updateSecurityNr, updatePhone, updateCountry, updateEmail, resetInfo } from './redux/form';
 import { updateCountries } from './redux/countries';
@@ -9,12 +9,14 @@ class Form extends Component {
   state = {
     securityNr: this.props.form.securityNr || '',
     phone: this.props.form.phone || '',
+    email: this.props.form.email || '',
     country: this.props.form.country || '',
     countriesList: this.props.countries.countries || [],
     securityNrError: '',
     phoneError: '',
     emailError: '',
-    countryError: ''
+    countryError: '',
+    message: ''
   };
 
   componentDidMount() {
@@ -142,6 +144,15 @@ class Form extends Component {
     if (security.length < 1 && phone.length < 1 && email.length < 1 && country < 1) {
       console.log('Success');
       this.props.dispatch(resetInfo());
+
+      this.setState({message: 'Your form was submitted successfully'});
+
+      this.setState({ 
+        securityNr: '',
+        phone: '',
+        email: '',
+        country: ''
+      });
     }
   }
 
@@ -152,96 +163,103 @@ class Form extends Component {
     });
 
     return (
-      <View style={styles.wrapper}>
-        <View style={styles.container}>
-          <Text style={styles.heading}>Rocker Form</Text>
-          <View style={styles.field}>
-            <Text style={styles.label}>Fill in your social security number</Text>
-            <TextInput 
-              style={styles.input}
-              placeholder='YYYYMMDDXXXX'
-              keyboardType = 'numeric'
-              onChangeText={val => this.handleChange('securityNr', val)}
-              value={this.state.securityNr}
+      <SafeAreaView style={styles.outerWrapper}>
+        <ScrollView style={styles.wrapper}>
+          <View style={styles.container}>
+            <Text style={styles.heading}>Rocker Form</Text>
+            <View style={styles.field}>
+              <Text style={styles.label}>Fill in your social security number</Text>
+              <TextInput 
+                style={styles.input}
+                placeholder='YYYYMMDDXXXX'
+                keyboardType = 'numeric'
+                onChangeText={val => this.handleChange('securityNr', val)}
+                value={this.state.securityNr}
+                />
+              {this.state.securityNrError ? <Text style={styles.error}>{this.state.securityNrError}</Text> : null}
+            </View>
+
+            <View style={styles.field}>
+              <Text style={styles.label}>Fill in your phone number</Text>
+              <TextInput
+                style={styles.input}
+                placeholder='0709987766'
+                keyboardType = 'numeric'
+                onChangeText={val => this.handleChange('phone', val)}
+                value={this.state.phone}
               />
-            {this.state.securityNrError ? <Text style={styles.error}>{this.state.securityNrError}</Text> : null}
-          </View>
+              {this.state.phoneError ? <Text style={styles.error}>{this.state.phoneError}</Text> : null}
+            </View>
 
-          <View style={styles.field}>
-            <Text style={styles.label}>Fill in your phone number</Text>
-            <TextInput
-              style={styles.input}
-              placeholder='0709987766'
-              keyboardType = 'numeric'
-              onChangeText={val => this.handleChange('phone', val)}
-              value={this.state.phone}
-            />
-            {this.state.phoneError ? <Text style={styles.error}>{this.state.phoneError}</Text> : null}
-          </View>
+            <View style={styles.field}>
+              <Text style={styles.label}>Fill in your email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder='example@email.com'
+                keyboardType='email-address'
+                autoCapitalize = 'none'
+                onChangeText={val => this.handleChange('email', val)}
+                value={this.state.email}
+              />
+              {this.state.emailError ? <Text style={styles.error}>{this.state.emailError}</Text> : null}
+            </View>
 
-          <View style={styles.field}>
-            <Text style={styles.label}>Fill in your email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder='example@email.com'
-              keyboardType='email-address'
-              autoCapitalize = 'none'
-              onChangeText={val => this.handleChange('email', val)}
-              value={this.state.email}
-            />
-            {this.state.emailError ? <Text style={styles.error}>{this.state.emailError}</Text> : null}
-          </View>
+            <View style={styles.field}>
+              <Text style={styles.label}>Choose your country</Text>
+              <RNPickerSelect
+                onValueChange={val => this.handleCountry(val)}
+                placeholder={{
+                  label: 'Select country',
+                  value: null,
+                }}
+                value={this.state.country}
+                items={countriesItems}
+                style={pickerSelectStyles}
+                Icon={() => {
+                  return <Text style={styles.arrow}>◣</Text>
+                }}
+              />
+              {this.state.countryError ? <Text style={styles.error}>{this.state.countryError}</Text> : null}
+            </View>
 
-          <View style={styles.field}>
-            <Text style={styles.label}>Choose your country</Text>
-            <RNPickerSelect
-              onValueChange={val => this.handleCountry(val)}
-              placeholder={{
-                label: 'Select country',
-                value: null,
-              }}
-              value={this.state.country}
-              items={countriesItems}
-              style={pickerSelectStyles}
-              Icon={() => {
-                return <Text style={styles.arrow}>◣</Text>
-              }}
-            />
-            {this.state.countryError ? <Text style={styles.error}>{this.state.countryError}</Text> : null}
+            {this.state.message ? <Text style={styles.success}>{this.state.message}</Text> : null}
+            <TouchableOpacity style={styles.button} onPress={this.validateFields}>
+              <Text style={styles.buttonText}>Submit</Text>
+            </TouchableOpacity>
           </View>
-
-          <TouchableOpacity style={styles.button} onPress={this.validateFields}>
-            <Text style={styles.buttonText}>Submit</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  outerWrapper: {
+    backgroundColor: '#f0f8fa',
+  },
   wrapper: {
     flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#f0f8fa',
   },
   container: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     flexWrap: 'wrap',
     marginHorizontal: 16,
+    marginVertical: 20
   },
   heading: {
     fontSize: 40,
     fontWeight: 'bold',
     alignSelf: 'flex-start',
-    marginBottom: 40
+    marginBottom: 40,
+    width: '100%'
   },
   field: {
     marginBottom: 30,
     width: '100%',
     alignSelf: 'stretch',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    maxWidth: 500,
   },
   label: {
     color: '#1f1f1f',
@@ -270,6 +288,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 16,
     borderRadius: 4,
+    maxWidth: 500,
   },
   buttonText: {
     fontSize: 20,
@@ -285,6 +304,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#9e9e9e',
     transform: [{ rotate: '-45deg' }]
+  },
+  success: {
+    color: 'green',
+    marginBottom: 20,
+    fontWeight: 'bold'
   }
 });
 
