@@ -2,6 +2,7 @@ export const UPDATE_SECURITYNR = 'UPDATE_SECURITYNR';
 export const UPDATE_PHONE = 'UPDATE_PHONE';
 export const UPDATE_EMAIL = 'UPDATE_EMAIL';
 export const UPDATE_COUNTRY = 'UPDATE_COUNTRY';
+export const RESET_INFO = 'RESET_INFO';
 
 const initialState = {
   securityNr: '',
@@ -29,6 +30,10 @@ export const updateCountry = country => ({
   country,
 });
 
+export const resetInfo = () => ({
+  type: RESET_INFO,
+});
+
 export default (state = initialState, action) => {
   switch (action.type) {
     case UPDATE_SECURITYNR:
@@ -51,6 +56,8 @@ export default (state = initialState, action) => {
         ...state,
         country: action.country,
       };
+    case RESET_INFO:
+      state = [];
     default:
       return state;
   }

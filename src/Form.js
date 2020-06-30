@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import { connect } from 'react-redux';
-import { updateSecurityNr, updatePhone, updateCountry, updateEmail } from './redux/form';
+import { updateSecurityNr, updatePhone, updateCountry, updateEmail, resetInfo } from './redux/form';
 import { updateCountries } from './redux/countries';
 import RNPickerSelect from 'react-native-picker-select';
 
@@ -10,7 +10,11 @@ class Form extends Component {
     securityNr: this.props.form.securityNr || '',
     phone: this.props.form.phone || '',
     country: this.props.form.country || '',
-    countriesList: this.props.countries.countries || []
+    countriesList: this.props.countries.countries || [],
+    securityNrError: '',
+    phoneError: '',
+    emailError: '',
+    countryError: ''
   };
 
   componentDidMount() {
@@ -64,8 +68,51 @@ class Form extends Component {
   }
   
   handleSubmit = () => {
+    this.validate();
+
+    //Do this on succesful submit
     console.log('success');
+    // this.props.dispatch(resetInfo())
   };
+
+  validate = () => {
+    // Social security number validation
+    const securityRegex = /^\d{6,8}[-|(\s)]{0,1}\d{4}$/;
+    if (this.state.securityNr && !(securityRegex.test(this.state.securityNr))) {
+      this.setState({securityNrError: 'The number incorrect, try YYYYMMDDXXXX'})
+    } else if (!this.state.securityNr) {
+      this.setState({securityNrError: 'This field is required'})
+    } else {
+      this.setState({securityNrError: ''})
+    }
+
+    // Phone number validation
+    const phoneRegex = /0([-\s]?\d){7,13}$/;
+    if (this.state.phone && !(phoneRegex.test(this.state.phone))) {
+      this.setState({phoneError: 'The number you have entered is incorrect'})
+    } else if (!this.state.phone) {
+      this.setState({phoneError: 'This field is required'})
+    } else {
+      this.setState({phoneError: ''})
+    }
+
+    // Email validation
+    const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (this.state.email && !(emailRegex.test(this.state.email)) ) {
+      this.setState({emailError: 'The email you entered is invalid'})
+    } else if (!this.state.email) {
+      this.setState({emailError: 'This field is required'})
+    } else {
+      this.setState({emailError: ''})
+    }
+
+    // Country validation
+    if (!this.state.country) {
+      this.setState({countryError: 'This field is required'})
+    } else {
+      this.setState({countryError: ''})
+    }
+  }
 
   render() {
     const countriesItems = [];  
@@ -81,7 +128,8 @@ class Form extends Component {
           keyboardType = 'numeric'
           onChangeText={val => this.handleChange('securityNr', val)}
           value={this.state.securityNr}
-        />
+          />
+        {this.state.securityNrError ? <Text>{this.state.securityNrError}</Text> : null}
 
         <Text>Fill in your phone number</Text>
         <TextInput
@@ -90,6 +138,7 @@ class Form extends Component {
           onChangeText={val => this.handleChange('phone', val)}
           value={this.state.phone}
         />
+        {this.state.phoneError ? <Text>{this.state.phoneError}</Text> : null}
 
         <Text>Fill in your email</Text>
         <TextInput
@@ -99,6 +148,7 @@ class Form extends Component {
           onChangeText={val => this.handleChange('email', val)}
           value={this.state.email}
         />
+        {this.state.emailError ? <Text>{this.state.emailError}</Text> : null}
 
         <Text>Choose your country</Text>
         <RNPickerSelect
@@ -110,6 +160,7 @@ class Form extends Component {
             value={this.state.country}
             items={countriesItems}
         />
+        {this.state.countryError ? <Text>{this.state.countryError}</Text> : null}
 
         <Button title="Submit" onPress={this.handleSubmit} />
       </View>
