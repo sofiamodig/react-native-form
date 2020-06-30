@@ -1,5 +1,6 @@
 export const UPDATE_SECURITYNR = 'UPDATE_SECURITYNR';
 export const UPDATE_PHONE = 'UPDATE_PHONE';
+export const UPDATE_EMAIL = 'UPDATE_EMAIL';
 export const UPDATE_COUNTRY = 'UPDATE_COUNTRY';
 
 const initialState = {
@@ -18,6 +19,11 @@ export const updatePhone = phone => ({
   phone,
 });
 
+export const updateEmail = email => ({
+  type: UPDATE_EMAIL,
+  email,
+});
+
 export const updateCountry = country => ({
   type: UPDATE_COUNTRY,
   country,
@@ -34,6 +40,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
         phone: action.phone,
+      };
+    case UPDATE_EMAIL:
+      return {
+        ...state,
+        email: action.email,
       };
     case UPDATE_COUNTRY:
       return {
