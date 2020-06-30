@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import { updateSecurityNr, updatePhone, updateCountry, updateEmail, resetInfo } from './redux/form';
 import { updateCountries } from './redux/countries';
@@ -79,7 +79,7 @@ class Form extends Component {
     // Social security number validation
     const securityRegex = /^\d{6,8}[-|(\s)]{0,1}\d{4}$/;
     if (this.state.securityNr && !(securityRegex.test(this.state.securityNr))) {
-      this.setState({securityNrError: 'The number incorrect, try YYYYMMDDXXXX'})
+      this.setState({securityNrError: 'The social security number incorrect'})
     } else if (!this.state.securityNr) {
       this.setState({securityNrError: 'This field is required'})
     } else {
@@ -121,59 +121,158 @@ class Form extends Component {
     });
 
     return (
-      <View style={styles.container}>
-        <Text>Fill in your social security number</Text>
-        <TextInput
-          placeholder='YYYYMMDDXXXX'
-          keyboardType = 'numeric'
-          onChangeText={val => this.handleChange('securityNr', val)}
-          value={this.state.securityNr}
-          />
-        {this.state.securityNrError ? <Text>{this.state.securityNrError}</Text> : null}
+      <View style={styles.wrapper}>
+        <View style={styles.container}>
+          <Text style={styles.heading}>Rocker Form</Text>
+          <View style={styles.field}>
+            <Text style={styles.label}>Fill in your social security number</Text>
+            <TextInput 
+              style={styles.input}
+              placeholder='YYYYMMDDXXXX'
+              keyboardType = 'numeric'
+              onChangeText={val => this.handleChange('securityNr', val)}
+              value={this.state.securityNr}
+              />
+            {this.state.securityNrError ? <Text style={styles.error}>{this.state.securityNrError}</Text> : null}
+          </View>
 
-        <Text>Fill in your phone number</Text>
-        <TextInput
-          placeholder='0709987766'
-          keyboardType = 'numeric'
-          onChangeText={val => this.handleChange('phone', val)}
-          value={this.state.phone}
-        />
-        {this.state.phoneError ? <Text>{this.state.phoneError}</Text> : null}
+          <View style={styles.field}>
+            <Text style={styles.label}>Fill in your phone number</Text>
+            <TextInput
+              style={styles.input}
+              placeholder='0709987766'
+              keyboardType = 'numeric'
+              onChangeText={val => this.handleChange('phone', val)}
+              value={this.state.phone}
+            />
+            {this.state.phoneError ? <Text style={styles.error}>{this.state.phoneError}</Text> : null}
+          </View>
 
-        <Text>Fill in your email</Text>
-        <TextInput
-          placeholder='example@email.com'
-          keyboardType='email-address'
-          autoCapitalize = 'none'
-          onChangeText={val => this.handleChange('email', val)}
-          value={this.state.email}
-        />
-        {this.state.emailError ? <Text>{this.state.emailError}</Text> : null}
+          <View style={styles.field}>
+            <Text style={styles.label}>Fill in your email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder='example@email.com'
+              keyboardType='email-address'
+              autoCapitalize = 'none'
+              onChangeText={val => this.handleChange('email', val)}
+              value={this.state.email}
+            />
+            {this.state.emailError ? <Text style={styles.error}>{this.state.emailError}</Text> : null}
+          </View>
 
-        <Text>Choose your country</Text>
-        <RNPickerSelect
-            onValueChange={val => this.handleCountry(val)}
-            placeholder={{
-              label: 'Select country',
-              value: null,
-            }}
-            value={this.state.country}
-            items={countriesItems}
-        />
-        {this.state.countryError ? <Text>{this.state.countryError}</Text> : null}
+          <View style={styles.field}>
+            <Text style={styles.label}>Choose your country</Text>
+            <RNPickerSelect
+              onValueChange={val => this.handleCountry(val)}
+              placeholder={{
+                label: 'Select country',
+                value: null,
+              }}
+              value={this.state.country}
+              items={countriesItems}
+              style={pickerSelectStyles}
+              Icon={() => {
+                return <Text style={styles.arrow}>◣</Text>
+              }}
+            />
+            {this.state.countryError ? <Text style={styles.error}>{this.state.countryError}</Text> : null}
+          </View>
 
-        <Button title="Submit" onPress={this.handleSubmit} />
+          <TouchableOpacity style={styles.button} onPress={this.handleSubmit}>
+            <Text style={styles.buttonText}>Submit</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#f0f8fa',
+  },
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    flexWrap: 'wrap',
+    marginHorizontal: 16,
+  },
+  heading: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    alignSelf: 'flex-start',
+    marginBottom: 40
+  },
+  field: {
+    marginBottom: 30,
+    width: '100%',
+    alignSelf: 'stretch',
+    flexDirection: 'column'
+  },
+  label: {
+    color: '#1f1f1f',
+    marginBottom: 8,
+    fontWeight: 'bold'
+  },
+  input: {
+    backgroundColor: '#fff',
+    color: '#1f1f1f',
+    width: '100%',
+    alignSelf: 'stretch',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+    fontSize: 16,
+  },
+  error: {
+    color: '#ff0000',
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginTop: 4
+  },
+  button: {
+    backgroundColor: '#34a8ed',
+    width: '100%',
+    paddingHorizontal: 10,
+    paddingVertical: 16,
+    borderRadius: 4,
+  },
+  buttonText: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  arrow: {
+    height: 30,
+    position: 'absolute',
+    right: 10,
+    top: 14,
+    fontSize: 12,
+    color: '#9e9e9e',
+    transform: [{ rotate: '-45deg' }]
+  }
+});
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+    color: '#1f1f1f',
+    backgroundColor: '#fff'
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+    color: '#1f1f1f',
+    backgroundColor: '#fff'
   },
 });
 
