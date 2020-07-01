@@ -76,24 +76,12 @@ class Form extends Component {
     securityValidate = false;
     let month, date, shortYear, fullYear;
   
-    if (this.state.securityNr.length == 10) {
-      shortYear = parseInt(this.state.securityNr.substr(0,2));
-      month = parseInt(this.state.securityNr.substr(2,2));
-      date = parseInt(this.state.securityNr.substr(4,2));
-  
-      if (month < 13 && date < 32) {
-        securityValidate = true;
-      } else {
-        securityValidate = false;
-      }
-    }
-  
     if (this.state.securityNr.length == 12) {
       fullYear = parseInt(this.state.securityNr.substr(0,4));
       month = parseInt(this.state.securityNr.substr(4,2));
       date = parseInt(this.state.securityNr.substr(6,2));
   
-      if (month < 13 && date < 32 && fullYear > (new Date().getFullYear() - 120)) {
+      if (month < 13 && date < 32 && fullYear > (new Date().getFullYear() - 120) && fullYear < (new Date().getFullYear())) {
         securityValidate = true;
       } else {
         securityValidate = false;
