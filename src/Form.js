@@ -21,7 +21,7 @@ class Form extends Component {
 
   componentDidMount() {
     if (Object.keys(this.state.countriesList).length < 1) {
-      this.getCountries()
+      this.getCountries();
     }
   }
 
@@ -89,21 +89,21 @@ class Form extends Component {
     }
     
     if (!this.state.securityNr) {
-      this.setState({securityNrError: 'This field is required'})
+      this.setState({securityNrError: 'This field is required'});
     } else if (securityValidate == false) {
-      this.setState({securityNrError: 'The social security number incorrect'})
+      this.setState({securityNrError: 'The social security number incorrect'});
     } else {
-      this.setState({securityNrError: ''})
+      this.setState({securityNrError: ''});
     }
   
     // Phone number validation
     const phoneRegex = /0([-\s]?\d){7,13}$/;
     if (this.state.phone && !(phoneRegex.test(this.state.phone))) {
-      this.setState({phoneError: 'The number you have entered is incorrect'})
+      this.setState({phoneError: 'The number you have entered is incorrect'});
     } else if (!this.state.phone) {
-      this.setState({phoneError: 'This field is required'})
+      this.setState({phoneError: 'This field is required'});
     } else {
-      this.setState({phoneError: ''})
+      this.setState({phoneError: ''});
     }
   
     // Email validation
@@ -124,7 +124,7 @@ class Form extends Component {
     }
 
     setTimeout(() => {
-      this.validateForm(this.state.securityNrError, this.state.phoneError, this.state.emailError, this.state.countryError)
+      this.validateForm(this.state.securityNrError, this.state.phoneError, this.state.emailError, this.state.countryError);
     }, 200)
   };
 
