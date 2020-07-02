@@ -1,5 +1,5 @@
 # React native form
-This is a react native application that uses typeScript and redux. The entered data is saved in redux persist to be able to reload the app. The storage is emptied upon succesful submit. The form has the following fields: Social security number, Phone number, Email address and Country. 
+This is a react native application that uses redux. The entered data is saved in redux persist to be able to reload the app. The storage is emptied upon succesful submit. The form has the following fields: Social security number, Phone number, Email address and Country. 
 
 The Social security number is validated with the following criterias:
 1. The number is 12 digits 
