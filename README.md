@@ -15,9 +15,16 @@ The countries are fetched from https://restcountries.eu/rest/v2/all and is displ
 
 All the fields are required.
 
+## Images
+
+<div style="display: flex;">
+<img src="https://github.com/sofiamodig/react-native-form/blob/master/screenshots/screen1.png" width="250">
+<img src="https://github.com/sofiamodig/react-native-form/blob/master/screenshots/screen2.png" width="250">
+<img src="https://github.com/sofiamodig/react-native-form/blob/master/screenshots/screen3.png" width="250">
+</div>
+
 ### Improvements
 - For an application that is going to use social security number it would be good to look for an API to check if the security number exists. 
-
 
 ### Installation
 **project setup**
