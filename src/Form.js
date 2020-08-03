@@ -154,7 +154,7 @@ class Form extends Component {
       <SafeAreaView style={styles.outerWrapper}>
         <ScrollView style={styles.wrapper}>
           <View style={styles.container}>
-            <Text style={styles.heading}>Rocker Form</Text>
+            <Text style={styles.heading}>Application Form</Text>
             <View style={styles.field}>
               <Text style={styles.label}>Fill in your social security number</Text>
               <TextInput 
